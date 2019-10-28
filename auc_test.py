@@ -1,5 +1,5 @@
 
-# Calcuate the ROC and AUC for a given classifier's recividism predictions 
+# Calcuate the ROC and AUC for a given classifier's recividism predictions
 def get_Values_at_Threshold(threshold,predicted_recividism):
     threshold_vals = []
     for val in predicted_recividism:
@@ -56,24 +56,31 @@ def calculateROC(predicted_recividism,actual_recividism,threshold_vals):
         tpr = calculateTPR(th_vals, actual_recividism)
         data_point = (fpr, tpr)
         roc_data.append(data_point)
+    roc_data.reverse()
     return roc_data
 
-# Ask layla: do we have to implement calculating AUC on our own ?
 def calculateAUC(roc_data):
-    return -1
+    auc = 0
+    prev_x = 0
+    for data_point in roc_data: # data_point is a (x,y) tuple
+        auc += (data_point[0]-prev_x) * data_point[1]
+        prev_x = data_point[0]
+    return auc
 
 
 def main():
   youtube_actual = [1,0,1,0]
   youtube_predicted = [0.8,0.6,0.4,0.2]
   youtube_threshold = [0,0.2,0.4,0.6,0.8,1]
-  print(calculateROC(youtube_predicted,youtube_actual,youtube_threshold))
+  roc = calculateROC(youtube_predicted,youtube_actual,youtube_threshold)
+  print(calculateAUC(roc))
 
   # where the numbers are P(person | commitsCrime)
   predicted_recividism = [0.5, 0.2, 0.7, 0.1, 0.9,0.4]
   actual_recividism = [0, 1, 1, 0, 1,0] # 0 = false, 1 = true
   thresholdVals = [0,0.2,0.4,0.6,0.8,1]
-  print(calculateROC(predicted_recividism,actual_recividism,thresholdVals))
+  roc = calculateROC(predicted_recividism,actual_recividism,thresholdVals)
+  print(calculateAUC(roc))
 
 if __name__== "__main__":
   main()
